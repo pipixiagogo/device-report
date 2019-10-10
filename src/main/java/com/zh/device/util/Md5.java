@@ -10,7 +10,6 @@ package com.zh.device.util;
  *
  * <p>具体说明</p>
  *
- * @version $Id: Md5.java,v 0.1 2016年1月19日 下午5:55:16  Exp $
  */
 public class Md5 {
     /*
@@ -106,7 +105,7 @@ public class Md5 {
         md5Final();
         return this.digest;
     }
-
+    //返回32位加密字符串
     public String md5_32(String inbuf) {
         md5Update(inbuf.getBytes(), inbuf.length());
         md5Final();
@@ -120,19 +119,22 @@ public class Md5 {
     /*
      * 类MD5最主要的公共方法，入口参数是你想要进行MD5变换的字符串返回的是变换完的结果，这个结果是从公共成员digestHexStr取得的．
      */
+    //返回16位加密字符串
     public String md5_16(String inbuf) {
-        return md5_32(inbuf).substring(8, 24);
+        String s = md5_32(inbuf);
+        String substring = s.substring(8, 24);
+        return substring;
     }
-
+    //返回8位加密字符串
     public String md5_8(String inbuf) {
-        return md5_32(inbuf).substring(0, 8);
+        String s = md5_32(inbuf);
+        return s.substring(0, 8);
     }
 
     /* md5Init是一个初始化函数，初始化核心变量，装入标准的幻数 */
     private void md5Init() {
         this.count[0] = 0L;
         this.count[1] = 0L;
-
         this.state[0] = 0x67452301L;
         this.state[1] = 0xefcdab89L;
         this.state[2] = 0x98badcfeL;

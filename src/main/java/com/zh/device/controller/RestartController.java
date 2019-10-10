@@ -99,17 +99,23 @@ public class RestartController {
     }
 
     @RequestMapping("sendBmu")
-    @ResponseBody
-    public String doSendBmu() {
-        String deviceName = "6f563bba93f8494481e2a1460675234d";
-        MsgBuilder msgBuilder = new MsgBuilder();
-        byte[] sendData1 = getSendData();
+    public void doSendBmu() {
+        for(int i=0;i<100000;i++){
+            String deviceName = "6f563bba93f8494481e2a1460675234d";
+            MsgBuilder msgBuilder = new MsgBuilder();
+            byte[] sendData1 = getSendData();
 //        byte[] combine = PlusArrayUtils.combine(packNum, sendData1);
-        byte[] build = msgBuilder.setVersion(Const.DEFAULT_VERSION).setBid(Const.DEFAULT_BID)
-                .setAid((byte) 0x81).setMid((byte) 0x10).setServiceData(sendData1).build();
-        Message<byte[]> message = MessageBuilder.withPayload(build).setHeader(MqttHeaders.TOPIC, Const.getSendTopic(deviceName)).build();
-        mqttOutbound.handleMessage(message);
-        return deviceName;
+            byte[] build = msgBuilder.setVersion(Const.DEFAULT_VERSION).setBid(Const.DEFAULT_BID)
+                    .setAid((byte) 0x81).setMid((byte) 0x10).setServiceData(sendData1).build();
+            Message<byte[]> message = MessageBuilder.withPayload(build).setHeader(MqttHeaders.TOPIC, Const.getSendTopic(deviceName)).build();
+            mqttOutbound.handleMessage(message);
+            try {
+                Thread.sleep(100);
+            }catch (InterruptedException e){
+                System.out.println("321");
+            }
+
+        }
     }
 
     public byte[] getSendData() {
@@ -154,11 +160,6 @@ public class RestartController {
         buf.writeBytes(bytes);
     }
 
-    public static void main(String[] args) {
-        System.out.println(System.currentTimeMillis());
-        System.out.println(System.currentTimeMillis() + 1000);
-    }
-
     @RequestMapping("test")
     @ResponseBody
     public String doTest() {
@@ -197,13 +198,22 @@ public class RestartController {
         byte[] build = msgBuilder.setAid((byte) 0x44).setMid((byte) 0x01).setVersion(Const.DEFAULT_VERSION)
                 .setBid(Const.DEFAULT_BID).setServiceData(sendDatas).build();
         Message<byte[]> message = MessageBuilder.withPayload(build).setHeader(MqttHeaders.TOPIC, sendTopic).build();
-        mqttOutbound.handleMessage(message);
-        try {
-            Thread.sleep(2);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        long l = System.currentTimeMillis();
+        int i=0;
+        while (true){
+            i++;
+            mqttOutbound.handleMessage(message);
+            try {
+                Thread.sleep(1);
+                if(i == 1000){
+                    break;
+                }
+            }catch (InterruptedException e){
+                e.printStackTrace();
+            }
         }
-        return "皮皮虾";
+        long l1 = System.currentTimeMillis();
+        return "皮皮虾"+(l1-l);
     }
 
     @RequestMapping("/postition")

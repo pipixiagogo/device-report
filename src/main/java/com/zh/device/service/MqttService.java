@@ -5,6 +5,7 @@ import com.zh.device.config.PropertiesConfig;
 import com.zh.device.message.JMessage;
 import com.zh.device.message.trans.MessageTransformer;
 import com.zh.device.message.type.MessageType;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -30,11 +31,16 @@ public class MqttService {
 
     @Bean
     public MqttPahoClientFactory mqttClientFactory() {
+        MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
+        mqttConnectOptions.setMaxInflight(2000);
+        mqttConnectOptions.setPassword(propertiesConfig.getMqttPassword().toCharArray());
+        mqttConnectOptions.setUserName(propertiesConfig.getMqttUsername());
+        mqttConnectOptions.setCleanSession(true);
+        mqttConnectOptions.setKeepAliveInterval(20);
+        String[] strings = new String[]{propertiesConfig.getMqttServer()};
+        mqttConnectOptions.setServerURIs(strings);
         DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
-        factory.setKeepAliveInterval(20);
-        factory.setServerURIs(propertiesConfig.getMqttServer());
-        factory.setUserName(propertiesConfig.getMqttUsername());
-        factory.setPassword(propertiesConfig.getMqttPassword());
+        factory.setConnectionOptions(mqttConnectOptions);
         return factory;
     }
 //    public B handle(MessageHandler messageHandler) {

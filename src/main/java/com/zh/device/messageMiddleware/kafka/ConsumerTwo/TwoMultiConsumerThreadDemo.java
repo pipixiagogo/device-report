@@ -1,7 +1,7 @@
 package com.zh.device.messageMiddleware.kafka.ConsumerTwo;
 
-import com.fasterxml.jackson.databind.deser.std.StringDeserializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
 
 import java.util.Properties;
 

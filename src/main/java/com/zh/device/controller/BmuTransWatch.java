@@ -3,6 +3,7 @@ package com.zh.device.controller;
 import com.bugull.mongo.BuguQuery;
 import com.zh.device.Entity.ConfigFile;
 import com.zh.device.common.Const;
+import com.zh.device.config.RedisPoolUtil;
 import com.zh.device.dao.ConfigFileDao;
 import com.zh.device.util.ByteUtil;
 import com.zh.device.util.MsgBuilder;
@@ -15,6 +16,10 @@ import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import redis.clients.jedis.Jedis;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @RestController
 public class BmuTransWatch {
@@ -24,10 +29,35 @@ public class BmuTransWatch {
     @Autowired
     private ConfigFileDao configFileDao;
 
+    @Autowired
+    private RedisPoolUtil redisPoolUtil;
+
+    @RequestMapping(value = "testSuccess")
+    public void testRedis(){
+        Jedis jedis = redisPoolUtil.getJedis();
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String dateString = formatter.format(date);
+        jedis.incr("BMUTransSuccess-" + dateString);
+        jedis.expire("BMUTransSuccess-" + dateString,60);
+        System.out.println(jedis.get("BMUTransSuccess-" + dateString));
+    }
+    @RequestMapping(value = "testFail")
+    public void testFail(){
+        Jedis jedis = redisPoolUtil.getJedis();
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String dateString = formatter.format(date);
+        jedis.incr("BMUTransFail-" + dateString);
+        jedis.expire("BMUTransFail-" + dateString,60);
+        System.out.println(jedis.get("BMUTransFail-" + dateString));
+    }
+
+
     @RequestMapping(value = "reportBreakLog")
     public void reportBreakLog(int gsm, int falsh, int errpom, int can, int tsp) {
         //f30c8e5a68594e77a87b46be4a7bb0d1   3015790210c94626950618ca4b69715a
-        String deviceName = "3015790210c94626950618ca4b69715a";
+        String deviceName = "f30c8e5a68594e77a87b46be4a7bb0d1";
         String sendTopic = Const.getSendTopic(deviceName);
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeShort(5);
@@ -72,7 +102,7 @@ public class BmuTransWatch {
     @RequestMapping(value = "reportOldBreakLog")
     public void reportOldBreakLog(int can, int canState, int gsm, int flash) {
         //f30c8e5a68594e77a87b46be4a7bb0d1  3015790210c94626950618ca4b69715a
-        String deviceName = "3015790210c94626950618ca4b69715a";
+        String deviceName = "f30c8e5a68594e77a87b46be4a7bb0d1";
         String sendTopic = Const.getSendTopic(deviceName);
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeInt(1);

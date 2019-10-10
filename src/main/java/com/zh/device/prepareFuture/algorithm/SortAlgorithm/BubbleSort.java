@@ -5,8 +5,8 @@ import java.util.Arrays;
 public class BubbleSort {
 
     public static void main(String[] args) {
-        int[] nums = {9, 8, 7, 5, 4, 2, 1};
-        quickyMore(nums, 0, nums.length - 1);
+        int[] nums = {12, 20, 5, 16, 15, 1, 30,45};
+        quikySort(nums, 0, nums.length - 1);
         for (int i : nums) {
             System.out.print(i + "\t");
         }
@@ -45,7 +45,7 @@ public class BubbleSort {
         }
     }
 
-    //3.改进冒泡排序 添加个标识flag 高效排序
+    //3.添加个标识flag 高效排序
     private static void flagMaoPao(int[] nums) {
         for (int i = 1; i < nums.length; i++) {
             boolean flag = true;

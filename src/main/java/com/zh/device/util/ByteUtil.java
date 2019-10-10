@@ -23,10 +23,13 @@ public final class ByteUtil {
     }
 
     public static void main(String[] args) {
-        byte[] byteArray = getByteArray((byte) 3);
+        byte[] byteArray = getByteArray((byte) 4);
         for(byte b:byteArray){
             System.out.print(b);
         }
+        System.out.println();
+        int i = (2 & 0x04);
+        System.out.println(i);
     }
 
     public static byte[] getBytes(int data) {
